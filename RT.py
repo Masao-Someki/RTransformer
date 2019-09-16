@@ -3,10 +3,10 @@
 import torch
 import torch.nn as nn
 
-from .utils import rnn
-from .utils import attention
-from .utils import ffn
-from .utils import norm
+from utils import rnn
+from utils import attention
+from utils import feedforward
+from utils import norm
 
 
 class RT(nn.Module):
@@ -19,7 +19,6 @@ class RT(nn.Module):
         rnn_hsize=256,
         ffn_hsize=256,
         num_heads=4,
-        mha_hsize=256,
         dropout=0.2
     ):
         """RNN enhanced Transformer Block.
@@ -36,10 +35,11 @@ class RT(nn.Module):
             dropout (float): Dropout rate.
 
         """
+        super(RT, self).__init__()
         self.rnn = rnn.RNN(d_model, rnn_type, kernel, rnn_layer,
             rnn_hsize, dropout)
         mha = attention.MHA(d_model, num_heads, dropout)
-        ffn = ffn.FFN(d_model, ffn_hsize, dropout)
+        ffn = feedforward.FFN(d_model, ffn_hsize, dropout)
 
         self.mha_norm = norm.ResidualNorm(mha)
         self.ffn_norm = norm.ResidualNorm(ffn)
@@ -57,7 +57,7 @@ class RT(nn.Module):
 
         """
         x = self.rnn(inputs)
-        x = self.mha_norm(x, mask)
+        x = self.mha_norm(x, mask=mask)
         x = self.ffn_norm(x)
         return x
 

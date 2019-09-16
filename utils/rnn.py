@@ -8,6 +8,7 @@ from . import norm
 class RNN(nn.Module):
     def __init__(self, d_model, rnn_type, kernel, nlayer,
         hsize, dropout):
+        super(RNN, self).__init__()
         self.kernel = kernel
 
         if rnn_type == 'gru':
@@ -41,12 +42,12 @@ class RNN(nn.Module):
                 dropout=dropout,
                 bidirectional=False
             )
-        self.rnn = norm.ResidualNorm(net, dropout=dropout)
+        self.rnn = norm.ResidualNorm(net, dropout, is_rnn=True)
 
     def forward(self, inputs):
-        b, l, d = x.shape
+        b, l, d = inputs.shape
         x = self.set_input(inputs)
-        x, _ = self.rnn(x)
+        x = self.rnn(x)
         x = x[:, -1, :]
         return x.view(b, l, d)
 
@@ -54,10 +55,16 @@ class RNN(nn.Module):
         """set kernel_size as input batch size."""
         b, l, d = x.shape
         x = self.pad(x)
-        index = [id for j in range(l - self.kernel + 2)
+        index = [id for j in range(l + self.kernel - 2)
                     for id in range(j, j + self.kernel)]
         index = torch.LongTensor(index)
-        x = torch.index_select(x, 1, index)
+        x = torch.index_select(x, 1, index[:int(self.kernel*l)])
         x = x.reshape(b, l, self.kernel, -1)
         d = x.shape[-1]
         return x.view(-1, self.kernel, d)
+
+    def pad(self, inputs):
+        b, l, d = inputs.shape
+        zeros = torch.zeros((self.kernel-1, d))
+        zeros = zeros.unsqueeze(0).repeat(b, 1, 1)
+        return torch.cat((zeros, inputs), dim=1)
