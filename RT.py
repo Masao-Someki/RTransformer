@@ -1,4 +1,4 @@
-# Pytorch implementation of RNN-enhanced Transformer
+:# QUESTION: # Pytorch implementation of RNN-enhanced Transformer
 
 import torch
 import torch.nn as nn
@@ -41,8 +41,8 @@ class RT(nn.Module):
         mha = attention.MHA(d_model, num_heads, dropout)
         ffn = feedforward.FFN(d_model, ffn_hsize, dropout)
 
-        self.mha_norm = norm.ResidualNorm(mha)
-        self.ffn_norm = norm.ResidualNorm(ffn)
+        self.mha_norm = norm.ResidualNorm(mha, d_model)
+        self.ffn_norm = norm.ResidualNorm(ffn, d_model)
 
     def forward(self, inputs, mask=None):
         """Forward propagation of RT.
