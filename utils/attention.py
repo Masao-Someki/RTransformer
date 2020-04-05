@@ -24,8 +24,7 @@ class MHA(nn.Module):
         b, l, d = inputs.shape
         x = self.linear_1(inputs)
         q, k, v = map(self.split_heads, torch.split(x, d, dim=2))
-        q = q.transpose(2, 3) # (b, h, l, d_k)
-        v = v.transpose(2, 3) # (b, h, l, d_k)
+        k = k.transpose(2, 3) # (b, h, l, d_k)
         scores = torch.matmul(q, k) # (b, h, l, l)
         scores = scores / math.sqrt(self.d_k) # (b, h, l, l)
         if mask is not None:
@@ -45,7 +44,7 @@ class MHA(nn.Module):
 
     def split_heads(self, x):
         b, l, d = x.shape
-        return x.reshape((b, l, self.heads, d // self.heads))
+        return x.reshape((b, l, self.heads, d // self.heads)).transpose(1, 2)
 
 class Linear(nn.Module):
     def __init__(self, din, dout):

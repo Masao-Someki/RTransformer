@@ -10,6 +10,7 @@ class ResidualNorm(nn.Module):
         self.net = net
         self.layernorm = nn.LayerNorm(feature)
         self.is_rnn = is_rnn
+        self.layernorm = nn.LayerNorm(feature)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, inputs, **kwargs):

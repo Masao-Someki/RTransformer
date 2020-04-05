@@ -1,4 +1,4 @@
-# Pytorch implementation of RNN-enhanced Transformer
+:# QUESTION: # Pytorch implementation of RNN-enhanced Transformer
 
 import torch
 import torch.nn as nn
