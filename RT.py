@@ -3,10 +3,10 @@
 import torch
 import torch.nn as nn
 
-from utils import rnn
-from utils import attention
-from utils import feedforward
-from utils import norm
+from .utils import rnn
+from .utils import attention
+from .utils import feedforward
+from .utils import norm
 
 
 class RT(nn.Module):
@@ -36,13 +36,14 @@ class RT(nn.Module):
 
         """
         super(RT, self).__init__()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.rnn = rnn.RNN(d_model, rnn_type, kernel, rnn_layer,
-            rnn_hsize, dropout)
+            rnn_hsize, dropout, self.device)
         mha = attention.MHA(d_model, num_heads, dropout)
         ffn = feedforward.FFN(d_model, ffn_hsize, dropout)
 
-        self.mha_norm = norm.ResidualNorm(mha)
-        self.ffn_norm = norm.ResidualNorm(ffn)
+        self.mha_norm = norm.ResidualNorm(mha, d_model)
+        self.ffn_norm = norm.ResidualNorm(ffn, d_model)
 
     def forward(self, inputs, mask=None):
         """Forward propagation of RT.

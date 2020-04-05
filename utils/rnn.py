@@ -7,7 +7,7 @@ from . import norm
 
 class RNN(nn.Module):
     def __init__(self, d_model, rnn_type, kernel, nlayer,
-        hsize, dropout):
+        hsize, dropout, device):
         super(RNN, self).__init__()
         self.kernel = kernel
 
@@ -42,7 +42,8 @@ class RNN(nn.Module):
                 dropout=dropout,
                 bidirectional=False
             )
-        self.rnn = norm.ResidualNorm(net, dropout, is_rnn=True)
+        self.rnn = norm.ResidualNorm(net, d_model, dropout, is_rnn=True)
+        self.device = device
 
     def forward(self, inputs):
         b, l, d = inputs.shape
@@ -57,7 +58,7 @@ class RNN(nn.Module):
         x = self.pad(x)
         index = [id for j in range(l + self.kernel - 2)
                     for id in range(j, j + self.kernel)]
-        index = torch.LongTensor(index)
+        index = torch.LongTensor(index).to(self.device)
         x = torch.index_select(x, 1, index[:int(self.kernel*l)])
         x = x.reshape(b, l, self.kernel, -1)
         d = x.shape[-1]
@@ -65,6 +66,6 @@ class RNN(nn.Module):
 
     def pad(self, inputs):
         b, l, d = inputs.shape
-        zeros = torch.zeros((self.kernel-1, d))
+        zeros = torch.zeros((self.kernel-1, d)).to(self.device)
         zeros = zeros.unsqueeze(0).repeat(b, 1, 1)
         return torch.cat((zeros, inputs), dim=1)
