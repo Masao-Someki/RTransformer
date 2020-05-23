@@ -24,7 +24,7 @@ jobs:
       - run:
               name: test
               command: |
-                      pytest --duration=0 -v
+                      pytest -v
 
 workflows:
   main:
