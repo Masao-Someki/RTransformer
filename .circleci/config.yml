@@ -8,11 +8,10 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - run: source ./path.sh
+      - run: cd tools; make
       - run:
-          command: ./manage.py test
+          command: pytest --duration=0 ./test/test_rtrans.py
           name: Test
 
 workflows:
