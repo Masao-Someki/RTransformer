@@ -13,7 +13,7 @@ conf = json.load(open('rtrans.conf'))
 net = get_rtrans(**conf)
 net.eval()
 
-data = torch.randn(1, 32, 50)
+data = torch.randn(1, 32, conf['d_model'])
 # data should be formatted as (B, L, D)
 # B as batch-size, L as sequence-length, D as feature-dimension.
 
