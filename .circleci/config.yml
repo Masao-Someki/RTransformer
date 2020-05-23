@@ -17,14 +17,9 @@ jobs:
                       pip install -e ./
 
       - run:
-              name: set path
-              command: |
-                      source path.sh
-
-      - run:
               name: test
               command: |
-                      pytest -v
+                      source path.sh; pytest -v
 
 workflows:
   main:
