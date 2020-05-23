@@ -8,11 +8,22 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - run: cd tools; make
-      - run: source path.sh
       - run:
-          command: pytest --duration=0 ./test/test_rtrans.py
-          name: Test
+              name: install dependencies
+              command: |
+                      cd tools; make
+                      pip install pytest
+                      pip install -e ./
+
+      - run:
+              name: set path
+              command: |
+                      source path.sh
+
+      - run:
+              name: test
+              command: |
+                      pytest --duration=0 -v
 
 workflows:
   main:
