@@ -12,6 +12,7 @@ jobs:
               name: install dependencies
               command: |
                       cd tools; make
+                      cd -
                       pip install pytest
                       pip install -e ./
 
