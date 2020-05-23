@@ -8,8 +8,8 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - run: source ./path.sh
       - run: cd tools; make
+      - run: source path.sh
       - run:
           command: pytest --duration=0 ./test/test_rtrans.py
           name: Test
